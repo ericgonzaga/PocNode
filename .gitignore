@@ -1,6 +1,6 @@
 
 /build
-/converage
+/coverage
 /node_modules
 .env
 .sqlite
