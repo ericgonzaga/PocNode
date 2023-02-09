@@ -4,9 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon -e ts src/index.ts",
+        "start": "NODE_ENV=development nodemon -e ts src/index.ts",
         "startjs": "nodemon build/index.js",
-        "build": "npx tsc"
+        "ts2js": "npx tsc"
     },
     "keywords": [],
     "author": "",
@@ -24,6 +24,7 @@
     "dependencies": {
         "dotenv": "^16.0.3",
         "express": "^4.18.2",
-        "nodemon": "^2.0.20"
+        "nodemon": "^2.0.20",
+        "yup": "^1.0.0"
     }
 }

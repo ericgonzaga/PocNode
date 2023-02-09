@@ -1,5 +1,5 @@
-import { server } from "./server/server";
-import "dotenv/config";
+import { server } from './server/server';
+import 'dotenv/config';
 
 const port = process.env.PORT || 3333;
 
