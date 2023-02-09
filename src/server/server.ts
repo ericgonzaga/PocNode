@@ -1,6 +1,6 @@
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { testeRouter  } from './routers/teste.router';
+import { pessoaRouter  } from './routers';
 
 const version = process.env.npm_package_version;
 
@@ -12,9 +12,9 @@ server.get('/', (req, res) => {
 });
 
 server.get('/info', (req, res) => {
-    return res.status(StatusCodes.OK).send(`Versão ${version}`);
+    return res.status(StatusCodes.OK).send(`Version ${version}`);
 });
 
-server.use('/teste', testeRouter);
+server.use('/pessoa', pessoaRouter);
 
 export { server };

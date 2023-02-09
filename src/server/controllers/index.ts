@@ -1,1 +1,1 @@
-export * as TesteController from './teste.controller';
+export * as PessoaController from './pessoa.controller';

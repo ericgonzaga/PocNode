@@ -1,3 +1,6 @@
+
 /build
+/converage
 /node_modules
 .env
+.sqlite

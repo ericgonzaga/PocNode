@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ValidationError } from 'yup';
-import { filterSchema, idSchema } from '../shared/filter.types';
+import { filterSchema, idSchema } from './validation.types';
 
 type TProperties = 'header' | 'body' | 'params' | 'query';
 
