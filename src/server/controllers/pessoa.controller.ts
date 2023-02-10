@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import * as yup from 'yup';
+import { IPessoa } from '../../models/pessoa.type';
 import { validation } from '../middleware';
-import { IFilterProps } from '../middleware/validation.types';
+import { idSchema, IFilterProps } from '../middleware/validation.types';
 
 export const list = async (req: Request<{}, {}, {}, IFilterProps>, res: Response) => {
     res.setHeader('access-control-exposed-headers', 'x-total-count');
@@ -18,25 +19,22 @@ export const getById = async (req: Request, res: Response) => {
 
 //==========================================================================
 
-const pessoaBodySchema = yup.object({
-    name: yup.string().min(3).required(),
+const pessoaBodySchema: yup.ObjectSchema<IPessoa> = yup.object({
+    name: yup.string().required(),
     age: yup.number().required().positive().integer(),
-    // email: yup.string().email(),
-    // website: yup.string().url().nullable(),
-    // createdOn: yup.date().default(() => new Date()),
-    // activated: yup.boolean().default(false),
+    email: yup.string().optional().email()
 });
 
-type ITesteBody = yup.InferType<typeof pessoaBodySchema>;
+export const createValidator = validation.validation({ body: pessoaBodySchema });
 
-export const pessoaBodyValidator = validation.validation({ body: pessoaBodySchema });
-
-export const create = async (req: Request<{}, {}, ITesteBody>, res: Response) => {
+export const create = async (req: Request<{}, {}, IPessoa>, res: Response) => {
     //return res.status(StatusCodes.CREATED).json({ id: 1}); 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Method not implemented');
 }; 
 
-export const update = async (req: Request<{}, {}, ITesteBody>, res: Response) => {
+export const updateValidator = validation.validation({ body: pessoaBodySchema, params: idSchema });
+
+export const update = async (req: Request<{}, {}, IPessoa>, res: Response) => {
     return res.json(req.body);
 };
 

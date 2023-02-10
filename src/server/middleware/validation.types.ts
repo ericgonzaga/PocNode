@@ -1,15 +1,21 @@
 import * as yup from 'yup';
 
-export const filterSchema = yup.object({
-    filter: yup.string().notRequired(),
-    page: yup.number().integer().moreThan(0),
-    limit: yup.number().integer().moreThan(0)
-});
+export interface IIdProps {
+    id: number;
+}
 
-export type IFilterProps = yup.InferType<typeof filterSchema>;
-
-export const idSchema = yup.object({
+export const idSchema: yup.ObjectSchema<IIdProps> = yup.object({
     id: yup.number().required().integer().positive()
 });
 
-export type IIdProps = yup.InferType<typeof idSchema>;
+export interface IFilterProps {
+    filter?: string;
+    limit?: number;
+    page?: number;
+}
+  
+export const filterSchema: yup.ObjectSchema<IFilterProps> = yup.object({
+    filter: yup.string().optional(),
+    limit: yup.number().optional().integer().positive(),
+    page: yup.number().optional().integer().positive(),
+});
