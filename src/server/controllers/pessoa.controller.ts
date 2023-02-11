@@ -1,45 +1,77 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import * as yup from 'yup';
-import { IPessoa } from '../../models/pessoa.type';
-import { validation } from '../middleware';
-import { idSchema, IFilterProps } from '../middleware/validation.types';
+import { IPessoa, IPessoaBody } from '../../models';
+import { PessoaProvider } from '../../providers';
+import { ValidationsMiddleware } from '../middleware';
+import { idSchema, IFilterProps } from '../middleware';
+import { ResponseHelper } from '../shared';
 
 export const list = async (req: Request<{}, {}, {}, IFilterProps>, res: Response) => {
-    res.setHeader('access-control-exposed-headers', 'x-total-count');
-    res.setHeader('x-total-count', 1);
+    const result = await PessoaProvider.list(req.query.page || 1, req.query.limit || 100, req.query.filter);
+    if (result instanceof Error) {
+        return ResponseHelper.returnError(res, StatusCodes.INTERNAL_SERVER_ERROR, result.message);
+    }
     
-    //return res.json([{ id: 1 }]);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Method not implemented');
+    const count = await PessoaProvider.count(req.query.filter);
+    if (count instanceof Error) {
+        return ResponseHelper.returnError(res, StatusCodes.INTERNAL_SERVER_ERROR, count.message);
+    }   
+    
+    res = ResponseHelper.setHeader(res, 'x-total-count', count);
+    return res.json(result);
 };
 
 export const getById = async (req: Request, res: Response) => {
-    return res.send(req.params.id);
+    const result = await PessoaProvider.getById(Number(req.params.id));
+    
+    if (result instanceof Error) {
+        return ResponseHelper.returnError(res, StatusCodes.INTERNAL_SERVER_ERROR, result.message);
+    } 
+    
+    return res.json(result);
 };
 
 //==========================================================================
 
-const pessoaBodySchema: yup.ObjectSchema<IPessoa> = yup.object({
-    name: yup.string().required(),
+const pessoaBodySchema: yup.ObjectSchema<IPessoaBody> = yup.object({
+    name: yup.string().required().min(3).max(100),
     age: yup.number().required().positive().integer(),
-    email: yup.string().optional().email()
+    email: yup.string().optional().email().max(100)
 });
 
-export const createValidator = validation.validation({ body: pessoaBodySchema });
+export const createValidator = ValidationsMiddleware.validation({ body: pessoaBodySchema });
 
 export const create = async (req: Request<{}, {}, IPessoa>, res: Response) => {
-    //return res.status(StatusCodes.CREATED).json({ id: 1}); 
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Method not implemented');
+    const result = await PessoaProvider.create(req.body);
+
+    if (result instanceof Error) {
+        return ResponseHelper.returnError(res, StatusCodes.INTERNAL_SERVER_ERROR, result.message);
+    }
+
+    return res.status(StatusCodes.CREATED).json({ id: result });    
 }; 
 
-export const updateValidator = validation.validation({ body: pessoaBodySchema, params: idSchema });
+export const updateValidator = ValidationsMiddleware.validation({ body: pessoaBodySchema, params: idSchema });
 
-export const update = async (req: Request<{}, {}, IPessoa>, res: Response) => {
-    return res.json(req.body);
+export const update = async (req: Request, res: Response) => {
+    const result = await PessoaProvider.update(Number(req.params.id), req.body);
+
+    if (result instanceof Error) {
+        return ResponseHelper.returnError(res, StatusCodes.INTERNAL_SERVER_ERROR, result.message);
+    }
+
+    return res.status(StatusCodes.NO_CONTENT).send();
 };
 
 //==========================================================================
 
-export const del = async (req: Request, res: Response) => {
-    return res.send(req.params.id);
+export const deleteById = async (req: Request, res: Response) => {
+    const result = await PessoaProvider.deleteById(Number(req.params.id));
+
+    if (result instanceof Error) {
+        return ResponseHelper.returnError(res, StatusCodes.INTERNAL_SERVER_ERROR, result.message);
+    }
+
+    return res.status(StatusCodes.NO_CONTENT).send();    
 };

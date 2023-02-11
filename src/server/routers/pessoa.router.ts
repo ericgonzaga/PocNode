@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { PessoaController } from '../controllers';
-import { filterValidator, idValidator } from '../middleware/validations.middleware';
+import { ValidationsMiddleware, AuthenticationMiddleware } from '../middleware';
 
 const pessoaRouter = Router();
 
-pessoaRouter.get('/', filterValidator, PessoaController.list);
-pessoaRouter.get('/:id', idValidator, PessoaController.getById);
-pessoaRouter.post('/', PessoaController.createValidator, PessoaController.create);
-pessoaRouter.put('/:id',  PessoaController.updateValidator, PessoaController.update);
-pessoaRouter.delete('/:id',  idValidator,  PessoaController.del);
+pessoaRouter.get('/', ValidationsMiddleware.filterValidator, PessoaController.list);
+pessoaRouter.get('/:id', ValidationsMiddleware.idValidator, PessoaController.getById);
+pessoaRouter.post('/', AuthenticationMiddleware.test, PessoaController.createValidator, PessoaController.create);
+pessoaRouter.put('/:id',  AuthenticationMiddleware.test, PessoaController.updateValidator, PessoaController.update);
+pessoaRouter.delete('/:id', AuthenticationMiddleware.test, ValidationsMiddleware.idValidator,  PessoaController.deleteById);
 
 export { pessoaRouter }; 

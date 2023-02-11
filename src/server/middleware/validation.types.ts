@@ -16,6 +16,6 @@ export interface IFilterProps {
   
 export const filterSchema: yup.ObjectSchema<IFilterProps> = yup.object({
     filter: yup.string().optional(),
-    limit: yup.number().optional().integer().positive(),
-    page: yup.number().optional().integer().positive(),
+    limit: yup.number().optional().integer().moreThan(0).default(100),
+    page: yup.number().optional().integer().moreThan(0).default(1),
 });
